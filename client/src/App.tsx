@@ -12,6 +12,7 @@ import Dashboard from "@/pages/dashboard";
 import StudentsPage from "@/pages/students";
 import StudentDetailPage from "@/pages/student-detail";
 import CurriculumPage from "@/pages/curriculum";
+import SchedulePage from "@/pages/schedule";
 import { PerplexityAttribution } from "@/components/PerplexityAttribution";
 
 function AppRouter() {
@@ -21,6 +22,7 @@ function AppRouter() {
       <Route path="/students" component={StudentsPage} />
       <Route path="/students/:id" component={StudentDetailPage} />
       <Route path="/curriculum" component={CurriculumPage} />
+      <Route path="/schedule" component={SchedulePage} />
       <Route component={NotFound} />
     </Switch>
   );

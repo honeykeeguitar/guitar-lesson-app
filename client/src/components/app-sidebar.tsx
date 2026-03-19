@@ -1,5 +1,5 @@
 import { useLocation, Link } from "wouter";
-import { LayoutDashboard, Users, BookOpen, Guitar } from "lucide-react";
+import { LayoutDashboard, Users, BookOpen, Guitar, CalendarDays } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -16,6 +16,7 @@ const menuItems = [
   { title: "대시보드", href: "/", icon: LayoutDashboard },
   { title: "학생 관리", href: "/students", icon: Users },
   { title: "커리큘럼", href: "/curriculum", icon: BookOpen },
+  { title: "레슨 일정", href: "/schedule", icon: CalendarDays },
 ];
 
 export function AppSidebar() {

@@ -301,6 +301,54 @@ addRoute("DELETE", "/api/lessons/:id", async (p) => {
   return { success: true };
 });
 
+// ---- Schedules ----
+function toSchedule(row: any) {
+  return {
+    id: row.id,
+    studentId: row.student_id,
+    dayOfWeek: row.day_of_week,
+    startTime: row.start_time,
+    endTime: row.end_time,
+    notes: row.notes,
+  };
+}
+
+addRoute("GET", "/api/schedules", async () => {
+  const { data, error } = await supabase.from("lesson_schedules").select("*");
+  if (error) throw error;
+  return (data || []).map(toSchedule);
+});
+
+addRoute("POST", "/api/schedules", async (_p, _q, body) => {
+  const { data, error } = await supabase.from("lesson_schedules").insert({
+    student_id: body.studentId,
+    day_of_week: body.dayOfWeek,
+    start_time: body.startTime,
+    end_time: body.endTime,
+    notes: body.notes,
+  }).select().single();
+  if (error) throw error;
+  return toSchedule(data);
+});
+
+addRoute("PATCH", "/api/schedules/:id", async (p, _q, body) => {
+  const update: any = {};
+  if (body.studentId !== undefined) update.student_id = body.studentId;
+  if (body.dayOfWeek !== undefined) update.day_of_week = body.dayOfWeek;
+  if (body.startTime !== undefined) update.start_time = body.startTime;
+  if (body.endTime !== undefined) update.end_time = body.endTime;
+  if (body.notes !== undefined) update.notes = body.notes;
+  const { data, error } = await supabase.from("lesson_schedules").update(update).eq("id", p.id).select().single();
+  if (error) throw error;
+  return toSchedule(data);
+});
+
+addRoute("DELETE", "/api/schedules/:id", async (p) => {
+  const { error } = await supabase.from("lesson_schedules").delete().eq("id", p.id);
+  if (error) throw error;
+  return { success: true };
+});
+
 // ---- Request dispatcher (now async) ----
 export async function handleRequest(method: string, url: string, body?: any): Promise<{ status: number; data: any }> {
   const [pathname, queryString] = url.split("?");
