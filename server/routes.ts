@@ -7,6 +7,29 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
+  // Student Groups
+  app.get("/api/groups", async (_req, res) => {
+    const groups = await storage.getStudentGroups();
+    res.json(groups);
+  });
+
+  app.post("/api/groups", async (req, res) => {
+    const group = await storage.createStudentGroup(req.body);
+    res.status(201).json(group);
+  });
+
+  app.patch("/api/groups/:id", async (req, res) => {
+    const group = await storage.updateStudentGroup(req.params.id, req.body);
+    if (!group) return res.status(404).json({ message: "Group not found" });
+    res.json(group);
+  });
+
+  app.delete("/api/groups/:id", async (req, res) => {
+    const deleted = await storage.deleteStudentGroup(req.params.id);
+    if (!deleted) return res.status(404).json({ message: "Group not found" });
+    res.json({ success: true });
+  });
+
   // Students
   app.get("/api/students", async (_req, res) => {
     const students = await storage.getStudents();

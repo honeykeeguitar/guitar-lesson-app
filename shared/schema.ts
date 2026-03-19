@@ -2,6 +2,18 @@ import { pgTable, text, varchar, integer, boolean, timestamp } from "drizzle-orm
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Student Groups (sub-categories)
+export const studentGroups = pgTable("student_groups", {
+  id: varchar("id").primaryKey(),
+  name: text("name").notNull(),
+  color: text("color").notNull(),
+  order: integer("order").notNull(),
+});
+
+export const insertStudentGroupSchema = createInsertSchema(studentGroups).omit({ id: true });
+export type InsertStudentGroup = z.infer<typeof insertStudentGroupSchema>;
+export type StudentGroup = typeof studentGroups.$inferSelect;
+
 // Students
 export const students = pgTable("students", {
   id: varchar("id").primaryKey(),
@@ -12,6 +24,7 @@ export const students = pgTable("students", {
   startDate: text("start_date").notNull(),
   notes: text("notes"),
   avatarColor: text("avatar_color").notNull(),
+  groupId: text("group_id"),
 });
 
 export const insertStudentSchema = createInsertSchema(students).omit({ id: true });

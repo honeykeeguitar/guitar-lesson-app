@@ -3,10 +3,18 @@ import {
   type CurriculumItem, type InsertCurriculumItem,
   type StudentProgress, type InsertProgress,
   type LessonRecord, type InsertLessonRecord,
+  type StudentGroup, type InsertStudentGroup,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
+  // Student Groups
+  getStudentGroups(): Promise<StudentGroup[]>;
+  getStudentGroup(id: string): Promise<StudentGroup | undefined>;
+  createStudentGroup(group: InsertStudentGroup): Promise<StudentGroup>;
+  updateStudentGroup(id: string, group: Partial<InsertStudentGroup>): Promise<StudentGroup | undefined>;
+  deleteStudentGroup(id: string): Promise<boolean>;
+
   // Students
   getStudents(): Promise<Student[]>;
   getStudent(id: string): Promise<Student | undefined>;
@@ -32,6 +40,7 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  private studentGroups: Map<string, StudentGroup> = new Map();
   private students: Map<string, Student> = new Map();
   private curriculum: Map<string, CurriculumItem> = new Map();
   private progress: Map<string, StudentProgress> = new Map();
@@ -121,6 +130,40 @@ export class MemStorage implements IStorage {
       const id = randomUUID();
       this.curriculum.set(id, { ...item, id });
     });
+  }
+
+  // Student Groups
+  async getStudentGroups(): Promise<StudentGroup[]> {
+    return Array.from(this.studentGroups.values()).sort((a, b) => a.order - b.order);
+  }
+
+  async getStudentGroup(id: string): Promise<StudentGroup | undefined> {
+    return this.studentGroups.get(id);
+  }
+
+  async createStudentGroup(group: InsertStudentGroup): Promise<StudentGroup> {
+    const id = randomUUID();
+    const newGroup: StudentGroup = { ...group, id };
+    this.studentGroups.set(id, newGroup);
+    return newGroup;
+  }
+
+  async updateStudentGroup(id: string, data: Partial<InsertStudentGroup>): Promise<StudentGroup | undefined> {
+    const existing = this.studentGroups.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...data };
+    this.studentGroups.set(id, updated);
+    return updated;
+  }
+
+  async deleteStudentGroup(id: string): Promise<boolean> {
+    // Unassign students from deleted group
+    for (const [key, student] of this.students) {
+      if (student.groupId === id) {
+        this.students.set(key, { ...student, groupId: null });
+      }
+    }
+    return this.studentGroups.delete(id);
   }
 
   // Students

@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Trash2, Plus, Calendar, Clock, CheckCircle2, Circle, BookOpen } from "lucide-react";
-import type { Student, CurriculumItem, StudentProgress, LessonRecord } from "@shared/schema";
+import type { Student, CurriculumItem, StudentProgress, LessonRecord, StudentGroup } from "@shared/schema";
 
 export default function StudentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +37,21 @@ export default function StudentDetailPage() {
   const { data: student, isLoading: loadingStudent } = useQuery<Student>({
     queryKey: ["/api/students", id],
     queryFn: () => apiRequest("GET", `/api/students/${id}`).then(r => r.json()),
+  });
+
+  const { data: groups = [] } = useQuery<StudentGroup[]>({
+    queryKey: ["/api/groups"],
+    queryFn: () => apiRequest("GET", "/api/groups").then(r => r.json()),
+  });
+
+  const updateGroupMutation = useMutation({
+    mutationFn: (groupId: string | null) =>
+      apiRequest("PATCH", `/api/students/${id}`, { groupId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/students", id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/students"] });
+      toast({ title: "그룹이 변경되었습니다" });
+    },
   });
 
   const { data: curriculum = [] } = useQuery<CurriculumItem[]>({
@@ -191,6 +206,27 @@ export default function StudentDetailPage() {
               </Badge>
               <Badge variant="outline">{levelMap[student.level]}</Badge>
               {student.phone && <span className="text-xs text-muted-foreground">{student.phone}</span>}
+              {groups.length > 0 && (
+                <Select
+                  value={student.groupId ?? "__none__"}
+                  onValueChange={(val) => updateGroupMutation.mutate(val === "__none__" ? null : val)}
+                >
+                  <SelectTrigger className="h-6 w-auto text-xs gap-1 border-dashed px-2" data-testid="select-student-group">
+                    <SelectValue placeholder="그룹 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">그룹 없음</SelectItem>
+                    {groups.map(g => (
+                      <SelectItem key={g.id} value={g.id}>
+                        <span className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: g.color }} />
+                          {g.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           </div>
         </div>
