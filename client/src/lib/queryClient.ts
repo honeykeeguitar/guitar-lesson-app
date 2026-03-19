@@ -36,7 +36,7 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<MockResponse> {
-  const { status, data: responseData } = handleRequest(method, url, data);
+  const { status, data: responseData } = await handleRequest(method, url, data);
   const res = new MockResponse(status, responseData);
   await throwIfResNotOk(res);
   return res;
@@ -49,7 +49,7 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     const url = Array.isArray(queryKey) ? queryKey[0] as string : String(queryKey);
-    const { status, data } = handleRequest("GET", url);
+    const { status, data } = await handleRequest("GET", url);
 
     if (unauthorizedBehavior === "returnNull" && status === 401) {
       return null;
@@ -67,8 +67,8 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      staleTime: 30000,
+      retry: 1,
     },
     mutations: {
       retry: false,
