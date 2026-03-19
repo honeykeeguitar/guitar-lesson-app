@@ -1,0 +1,22 @@
+{
+  "name": "기타 레슨 관리",
+  "short_name": "기타레슨",
+  "description": "통기타/일렉기타 레슨 커리큘럼 및 학생 진도 관리",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#faf6f1",
+  "theme_color": "#b85c14",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,8 +1,30 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { handleRequest } from "./client-storage";
 
-const API_BASE = "__PORT_5000__".startsWith("__") ? "" : "__PORT_5000__";
+// Mock Response object that works like fetch Response
+class MockResponse {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  private _data: any;
 
-async function throwIfResNotOk(res: Response) {
+  constructor(status: number, data: any) {
+    this.status = status;
+    this.ok = status >= 200 && status < 300;
+    this.statusText = status === 200 ? "OK" : status === 201 ? "Created" : "Error";
+    this._data = data;
+  }
+
+  async json() {
+    return this._data;
+  }
+
+  async text() {
+    return JSON.stringify(this._data);
+  }
+}
+
+async function throwIfResNotOk(res: MockResponse) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
     throw new Error(`${res.status}: ${text}`);
@@ -13,13 +35,9 @@ export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
-): Promise<Response> {
-  const res = await fetch(`${API_BASE}${url}`, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-  });
-
+): Promise<MockResponse> {
+  const { status, data: responseData } = handleRequest(method, url, data);
+  const res = new MockResponse(status, responseData);
   await throwIfResNotOk(res);
   return res;
 }
@@ -30,14 +48,17 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(`${API_BASE}${queryKey.join("/")}`);
+    const url = Array.isArray(queryKey) ? queryKey[0] as string : String(queryKey);
+    const { status, data } = handleRequest("GET", url);
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+    if (unauthorizedBehavior === "returnNull" && status === 401) {
       return null;
     }
 
-    await throwIfResNotOk(res);
-    return await res.json();
+    if (status < 200 || status >= 300) {
+      throw new Error(`${status}: ${JSON.stringify(data)}`);
+    }
+    return data as T;
   };
 
 export const queryClient = new QueryClient({
