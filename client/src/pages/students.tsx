@@ -179,7 +179,7 @@ export default function StudentsPage() {
               <p className="font-medium text-sm">{student.name}</p>
               <div className="flex items-center gap-2 mt-0.5">
                 <Badge variant="secondary" className="text-xs">
-                  {student.guitarType === "acoustic" ? "통기타" : student.guitarType === "electric" ? "일렉기타" : "통기타/일렉"}
+                  {student.guitarType === "acoustic" ? "통기타" : student.guitarType === "electric" ? "일렉기타" : student.guitarType === "ukulele" ? "우쿨렐레" : "통기타/일렉"}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
                   {student.level === "beginner" ? "초급" : student.level === "intermediate" ? "중급" : "고급"}
@@ -238,6 +238,7 @@ export default function StudentsPage() {
                       <SelectContent>
                         <SelectItem value="acoustic">통기타</SelectItem>
                         <SelectItem value="electric">일렉기타</SelectItem>
+                        <SelectItem value="ukulele">우쿨렐레</SelectItem>
                         <SelectItem value="both">통기타/일렉</SelectItem>
                       </SelectContent>
                     </Select>

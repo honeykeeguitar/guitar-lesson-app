@@ -43,6 +43,7 @@ export default function CurriculumPage() {
 
   const acoustic = curriculum.filter(c => c.guitarType === "acoustic").sort((a, b) => a.order - b.order);
   const electric = curriculum.filter(c => c.guitarType === "electric").sort((a, b) => a.order - b.order);
+  const ukulele = curriculum.filter(c => c.guitarType === "ukulele").sort((a, b) => a.order - b.order);
 
   function groupByLevelAndCategory(items: CurriculumItem[]) {
     const levels: Record<string, Record<string, CurriculumItem[]>> = {
@@ -155,7 +156,7 @@ export default function CurriculumPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold" data-testid="text-page-title">커리큘럼</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">통기타 / 일렉기타 레슨 커리큘럼 관리</p>
+          <p className="text-sm text-muted-foreground mt-0.5">통기타 / 일렉기타 / 우쿨렐레 레슨 커리큘럼 관리</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
@@ -179,6 +180,7 @@ export default function CurriculumPage() {
                     <SelectContent>
                       <SelectItem value="acoustic">통기타</SelectItem>
                       <SelectItem value="electric">일렉기타</SelectItem>
+                      <SelectItem value="ukulele">우쿨렐레</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -226,6 +228,10 @@ export default function CurriculumPage() {
             <Music className="w-3.5 h-3.5 mr-1.5" />
             일렉기타 ({electric.length})
           </TabsTrigger>
+          <TabsTrigger value="ukulele" data-testid="tab-ukulele">
+            <Music className="w-3.5 h-3.5 mr-1.5" />
+            우쿨렐레 ({ukulele.length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="acoustic" className="mt-4">
@@ -245,6 +251,16 @@ export default function CurriculumPage() {
             </div>
           ) : (
             renderCurriculumList(electric)
+          )}
+        </TabsContent>
+
+        <TabsContent value="ukulele" className="mt-4">
+          {isLoading ? (
+            <div className="space-y-3 animate-pulse">
+              {[1, 2, 3].map(i => <div key={i} className="h-12 bg-muted rounded" />)}
+            </div>
+          ) : (
+            renderCurriculumList(ukulele)
           )}
         </TabsContent>
       </Tabs>

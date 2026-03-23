@@ -20,6 +20,7 @@ export default function Dashboard() {
 
   const acousticCount = curriculum.filter(c => c.guitarType === "acoustic").length;
   const electricCount = curriculum.filter(c => c.guitarType === "electric").length;
+  const ukuleleCount = curriculum.filter(c => c.guitarType === "ukulele").length;
 
   const levelCounts = {
     beginner: students.filter(s => s.level === "beginner").length,
@@ -35,7 +36,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6 flex items-center gap-4">
             <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary">
@@ -66,6 +67,17 @@ export default function Dashboard() {
             <div>
               <p className="text-2xl font-bold">{electricCount}</p>
               <p className="text-xs text-muted-foreground">일렉기타 항목</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6 flex items-center gap-4">
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-chart-3/10 text-chart-3">
+              <Music className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{ukuleleCount}</p>
+              <p className="text-xs text-muted-foreground">우쿨렐레 항목</p>
             </div>
           </CardContent>
         </Card>
@@ -103,7 +115,7 @@ export default function Dashboard() {
                         <p className="text-sm font-medium truncate">{student.name}</p>
                         <div className="flex items-center gap-1.5">
                           <Badge variant="secondary" className="text-xs">
-                            {student.guitarType === "acoustic" ? "통기타" : student.guitarType === "electric" ? "일렉기타" : "통기타/일렉"}
+                            {student.guitarType === "acoustic" ? "통기타" : student.guitarType === "electric" ? "일렉기타" : student.guitarType === "ukulele" ? "우쿨렐레" : "통기타/일렉"}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
                             {student.level === "beginner" ? "초급" : student.level === "intermediate" ? "중급" : "고급"}

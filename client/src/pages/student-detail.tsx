@@ -139,7 +139,7 @@ export default function StudentDetailPage() {
 
   // Group by guitarType then by category
   const grouped = relevantCurriculum.reduce((acc, item) => {
-    const typeKey = item.guitarType === "acoustic" ? "통기타" : "일렉기타";
+    const typeKey = item.guitarType === "acoustic" ? "통기타" : item.guitarType === "electric" ? "일렉기타" : "우쿨렐레";
     if (!acc[typeKey]) acc[typeKey] = {};
     if (!acc[typeKey][item.category]) acc[typeKey][item.category] = [];
     acc[typeKey][item.category].push(item);
@@ -202,7 +202,7 @@ export default function StudentDetailPage() {
             <h1 className="text-xl font-bold" data-testid="text-student-name">{student.name}</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <Badge variant="secondary">
-                {student.guitarType === "acoustic" ? "통기타" : student.guitarType === "electric" ? "일렉기타" : "통기타/일렉"}
+                {student.guitarType === "acoustic" ? "통기타" : student.guitarType === "electric" ? "일렉기타" : student.guitarType === "ukulele" ? "우쿨렐레" : "통기타/일렉"}
               </Badge>
               <Badge variant="outline">{levelMap[student.level]}</Badge>
               {student.phone && <span className="text-xs text-muted-foreground">{student.phone}</span>}
